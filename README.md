@@ -34,7 +34,9 @@ Use the Classroom Simulator inside Live Classroom to trigger the story: Grade 2 
 
 ## GitHub
 
-The local repository is initialized for regular milestone commits. A remote can be attached with:
+Repository: https://github.com/AntiDynamic/classflow
+
+The repository is initialized with regular milestone commits and `main` tracks the GitHub remote. To contribute:
 
 ```bash
 git remote add origin <your-repository-url>
