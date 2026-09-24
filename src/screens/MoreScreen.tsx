@@ -1,0 +1,44 @@
+import { ArrowLeft, BookOpenCheck, CalendarClock, ChevronRight, Globe2, HeartHandshake, LaptopMinimalCheck, ListChecks, RotateCcw, Settings2, UsersRound } from 'lucide-react'
+import { useState } from 'react'
+import { languages, getCopy } from '../i18n/translations'
+import type { Language } from '../models/types'
+import { useClassroom } from '../state/ClassroomProvider'
+
+type Subview = 'menu' | 'timetable' | 'activities' | 'setup'
+
+export function MoreScreen({ language }: { language: Language }) {
+  const [subview, setSubview] = useState<Subview>('menu')
+  const { state, actions } = useClassroom()
+  if (subview === 'timetable') return <TimetableView language={language} onBack={() => setSubview('menu')} />
+  if (subview === 'activities') return <ActivityLibraryView language={language} onBack={() => setSubview('menu')} />
+  if (subview === 'setup') return <SetupView language={language} onBack={() => setSubview('menu')} />
+  return <div className="screen">
+    <header className="screen-header"><div><p className="eyebrow">{getCopy(language, 'more').toUpperCase()}</p><h1>Tools & setup</h1><p className="header-context">Keep the classroom simple. Keep the system ready.</p></div><div className="settings-avatar"><Settings2 size={19} /></div></header>
+    <section className="teacher-profile-card"><div className="teacher-avatar teacher-avatar-large">{state.teacher.avatar}</div><div><span className="eyebrow">TEACHER PROFILE</span><h2>{state.teacher.name}</h2><p>{state.teacher.school} · {state.teacher.village}</p></div><ChevronRight size={17} className="muted-icon" /></section>
+    <div className="settings-section-title">Classroom setup</div>
+    <div className="settings-list"><button onClick={() => setSubview('timetable')}><span className="settings-icon settings-blue"><CalendarClock size={18} /></span><span><strong>Timetable</strong><small>{state.timetable.filter((period) => !period.isBreak).length} periods · {state.timetable[0].subject}</small></span><ChevronRight size={17} /></button><button onClick={() => setSubview('setup')}><span className="settings-icon settings-amber"><UsersRound size={18} /></span><span><strong>Groups & onboarding</strong><small>3 groups · 21 learners · quick setup</small></span><ChevronRight size={17} /></button><button onClick={() => setSubview('activities')}><span className="settings-icon settings-green"><BookOpenCheck size={18} /></span><span><strong>Activity library</strong><small>{state.activities.length} reusable physical activities</small></span><ChevronRight size={17} /></button></div>
+    <div className="settings-section-title">Language</div>
+    <section className="language-card"><div className="language-card-top"><div className="settings-icon settings-purple"><Globe2 size={18} /></div><div><strong>{getCopy(language, 'language')}</strong><small>Choose the words that feel easiest today.</small></div></div><div className="language-options">{languages.map((item) => <button key={item.id} className={language === item.id ? 'language-active' : ''} onClick={() => actions.setLanguage(item.id)}><span>{item.native}</span><small>{item.label}</small></button>)}</div></section>
+    <section className="system-card"><div className="system-card-row"><LaptopMinimalCheck size={17} /><div><strong>{state.isOnline ? 'Ready to sync' : 'Working offline'}</strong><p>{state.isOnline ? 'Your local classroom state is safe and synced when available.' : 'All current plans, updates, and checkpoints continue on this phone.'}</p></div></div><div className="system-card-row"><HeartHandshake size={17} /><div><strong>Powered by RIVER/MGML principles</strong><p>Learning ladder · teacher support · peer practice · self-learning.</p></div></div></section>
+    <button className="text-button reset-button" onClick={actions.resetDemo}><RotateCcw size={15} /> Reset seeded demo</button>
+  </div>
+}
+
+function SubviewHeader({ eyebrow, title, onBack }: { eyebrow: string; title: string; onBack: () => void }) { return <header className="screen-header"><div><p className="eyebrow">{eyebrow}</p><h1>{title}</h1></div><button className="icon-button" onClick={onBack}><ArrowLeft size={19} /></button></header> }
+
+function TimetableView({ language, onBack }: { language: Language; onBack: () => void }) {
+  const { state } = useClassroom()
+  return <div className="screen"><SubviewHeader eyebrow="WEEKLY SCHOOL RHYTHM" title="Timetable" onBack={onBack} /><div className="timetable-note"><CalendarClock size={16} /><span>Used to estimate available teaching time and revision windows.</span></div><div className="day-label">Monday</div><section className="timetable-list">{state.timetable.filter((period) => period.day === 'Mon').map((period) => <div className={`period-row ${period.isBreak ? 'period-break' : ''}`} key={period.id}><div className="period-time"><strong>{period.start}</strong><small>{period.end}</small></div><div className="period-line" /><div className="period-info"><strong>{period.subject}</strong><small>{period.isBreak ? 'Rest and settle' : `${getCopy(language, 'grade')} ${period.grades.join(', ')} · ${period.end === '08:55' ? '55 min' : '40 min'}`}</small></div>{!period.isBreak && <span className="period-edit">Edit</span>}</div>)}</section><div className="day-label">This week</div><section className="mini-days"><div><strong>Tue</strong><span>Math</span><small>08:00</small></div><div><strong>Wed</strong><span>Math</span><small>08:00</small></div><div><strong>Thu</strong><span>Marathi</span><small>09:00</small></div><div><strong>Fri</strong><span>EVS</span><small>10:00</small></div></section><button className="secondary-button secondary-button-wide"><CalendarClock size={16} /> Add period</button></div>
+}
+
+function ActivityLibraryView({ onBack }: { language: Language; onBack: () => void }) {
+  const { state } = useClassroom()
+  return <div className="screen"><SubviewHeader eyebrow="PHYSICAL MATERIALS" title="Activity library" onBack={onBack} /><div className="library-note"><BookOpenCheck size={17} /><span>Reusable activities mapped to a learning ladder. No new worksheet required.</span></div><div className="activity-count">{state.activities.length} activities · Grades 1–3 · Mathematics</div><section className="activity-list">{state.activities.slice(0, 12).map((activity) => <div className="activity-row" key={activity.id}><div className={`activity-grade grade-${activity.grade === 1 ? 'blue' : activity.grade === 2 ? 'amber' : 'green'}`}>G{activity.grade}</div><div><strong>{activity.concept}</strong><p>{activity.materials.join(' · ')}</p></div><span>{activity.duration}m</span></div>)}</section></div>
+}
+
+function SetupView({ onBack, language }: { onBack: () => void; language: Language }) {
+  const { state } = useClassroom()
+  return <div className="screen"><SubviewHeader eyebrow="QUICK SETUP" title="Groups & onboarding" onBack={onBack} /><section className="setup-progress"><div className="setup-progress-top"><span>Ready for today</span><strong>7 / 7</strong></div><div className="progress-track"><div className="progress-fill fill-green" style={{ width: '100%' }} /></div><p>Profile, grades, subjects, timetable, learners, materials, and current learning states are loaded for the demo.</p></section><div className="setup-list"><div><CheckIcon /><span>Teacher profile</span><small>{state.teacher.name}</small></div><div><CheckIcon /><span>Grades managed</span><small>Grades 1, 2, 3</small></div><div><CheckIcon /><span>Today’s materials</span><small>{state.lesson.materials.join(' · ')}</small></div><div><CheckIcon /><span>Current learning states</span><small>Attention engine ready</small></div></div><div className="setup-footnote"><ListChecks size={15} /> {getCopy(language, 'save')} happens locally after every update.</div></div>
+}
+
+function CheckIcon() { return <span className="setup-check"><BookOpenCheck size={15} /></span> }

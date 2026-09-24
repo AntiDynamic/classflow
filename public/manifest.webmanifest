@@ -1,0 +1,10 @@
+{
+  "name": "ClassFlow",
+  "short_name": "ClassFlow",
+  "description": "A calm offline-first attention guide for multigrade teachers.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f7f8f4",
+  "theme_color": "#173f3b",
+  "icons": []
+}
