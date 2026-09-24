@@ -6,3 +6,4 @@ dist
 vite.config.js
 vite.config.d.ts
 mobile/classflow-expo-qr.png
+mobile/.expo
