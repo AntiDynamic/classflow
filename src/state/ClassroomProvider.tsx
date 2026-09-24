@@ -3,7 +3,7 @@ import { initialState } from '../data/demoData'
 import { getAttentionRecommendations, getPrimaryRecommendation, buildDynamicPlan } from '../engine/attentionEngine'
 import { aiService } from '../services/ai'
 import { loadState, saveState } from '../storage/localStore'
-import type { AppState, CheckpointResult, GroupStatus, Language, ScreenId } from '../models/types'
+import type { AppState, CheckpointResult, GroupStatus, Language, ScreenId, TimetablePeriod } from '../models/types'
 
 type Action =
   | { type: 'start-session' }
@@ -15,6 +15,7 @@ type Action =
   | { type: 'set-language'; language: Language }
   | { type: 'set-screen'; screen: ScreenId }
   | { type: 'toggle-online'; isOnline: boolean }
+  | { type: 'save-period'; period: TimetablePeriod }
   | { type: 'reset-demo' }
   | { type: 'open-onboarding' }
   | { type: 'complete-onboarding' }
@@ -120,6 +121,10 @@ function reducer(state: AppState, action: Action): AppState {
     case 'set-language': return { ...state, language: action.language }
     case 'set-screen': return { ...state, screen: action.screen }
     case 'toggle-online': return { ...state, isOnline: action.isOnline, lastSync: action.isOnline ? new Date().toISOString() : state.lastSync }
+    case 'save-period': {
+      const exists = state.timetable.some((period) => period.id === action.period.id)
+      return { ...state, timetable: exists ? state.timetable.map((period) => period.id === action.period.id ? action.period : period) : [...state.timetable, action.period], lastSync: new Date().toISOString() }
+    }
     case 'reset-demo': {
       const fresh = cloneInitial()
       return { ...fresh, language: state.language, isOnline: state.isOnline }
@@ -145,6 +150,7 @@ interface ClassroomContextValue {
     setLanguage: (language: Language) => void
     setScreen: (screen: ScreenId) => void
     toggleOnline: (isOnline: boolean) => void
+    savePeriod: (period: TimetablePeriod) => void
     resetDemo: () => void
     openOnboarding: () => void
     completeOnboarding: () => void
@@ -182,6 +188,7 @@ export function ClassroomProvider({ children }: { children: ReactNode }) {
       setLanguage: (language) => dispatch({ type: 'set-language', language }),
       setScreen: (screen) => dispatch({ type: 'set-screen', screen }),
       toggleOnline: (isOnline) => dispatch({ type: 'toggle-online', isOnline }),
+      savePeriod: (period) => dispatch({ type: 'save-period', period }),
       resetDemo: () => dispatch({ type: 'reset-demo' }),
       openOnboarding: () => dispatch({ type: 'open-onboarding' }),
       completeOnboarding: () => dispatch({ type: 'complete-onboarding' }),
