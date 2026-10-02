@@ -160,17 +160,18 @@ export function MatterScene3D({ temperature }: { temperature: number }) {
   </>
 }
 
-export function LightShadowScene({ lamp, object }: { lamp: number; object: number }) {
+export function LightShadowScene({ lamp, object, showRays, onLampChange, onObjectChange }: { lamp: number; object: number; showRays: boolean; onLampChange: (next: number) => void; onObjectChange: (next: number) => void }) {
   const lampX = (lamp - 25) / 18; const objectX = (object - 52) / 14
+  const dragLamp = (event: { stopPropagation: () => void; point: THREE.Vector3 }) => { event.stopPropagation(); onLampChange(event.point.x * 18 + 25) }
+  const dragObject = (event: { stopPropagation: () => void; point: THREE.Vector3 }) => { event.stopPropagation(); onObjectChange(event.point.x * 14 + 52) }
   return <>
-    <ambientLight intensity={.32} />
+    <ambientLight intensity={.55} />
     <pointLight castShadow position={[lampX, 2.9, 2.3]} intensity={18} distance={8} color="#ffe0a0" shadow-mapSize={[1024, 1024]} />
-    <mesh position={[lampX, 2.9, 2.3]}><sphereGeometry args={[.17, 18, 12]} /><meshStandardMaterial color="#ffdd73" emissive="#ffc345" emissiveIntensity={1.2} /></mesh>
+    <mesh position={[lampX, 2.9, 2.3]} onPointerDown={dragLamp} onPointerMove={(event) => { if (event.buttons) dragLamp(event) }}><sphereGeometry args={[.24, 20, 14]} /><meshStandardMaterial color="#ffdd73" emissive="#ffc345" emissiveIntensity={1.4} /></mesh>
     <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -1.05, 0]} receiveShadow><planeGeometry args={[7, 5]} /><meshStandardMaterial color="#375a67" roughness={.96} /></mesh>
     <mesh position={[0, 1, -2]} receiveShadow><planeGeometry args={[7, 4]} /><meshStandardMaterial color="#2e4964" roughness={.92} /></mesh>
-    <mesh position={[objectX, -.12, .15]} castShadow><boxGeometry args={[.72, 1.85, .72]} /><meshStandardMaterial color="#ff876f" roughness={.48} /></mesh>
-    <Line points={[[lampX, 2.9, 2.26], [objectX - .36, .8, .48]]} color="#ffe5a5" transparent opacity={.26} lineWidth={1} />
-    <Line points={[[lampX, 2.9, 2.26], [objectX + .36, -.8, .48]]} color="#ffe5a5" transparent opacity={.18} lineWidth={1} />
+    <mesh position={[objectX, -.12, .15]} castShadow onPointerDown={dragObject} onPointerMove={(event) => { if (event.buttons) dragObject(event) }}><boxGeometry args={[.72, 1.85, .72]} /><meshStandardMaterial color="#ff876f" emissive="#4e100b" emissiveIntensity={.2} roughness={.62} /><Edges color="#ffd2c6" linewidth={1.1} /></mesh>
+    {showRays && <><Line points={[[lampX, 2.9, 2.26], [objectX - .36, .8, .48], [objectX - .78, .2, -1.96]]} color="#ffe5a5" transparent opacity={.46} lineWidth={1.2} /><Line points={[[lampX, 2.9, 2.26], [objectX + .36, -.8, .48], [objectX + .92, -1.0, -1.96]]} color="#ffe5a5" transparent opacity={.34} lineWidth={1.2} /></>}
     <mesh position={[lampX, 1.2, 2.3]}><cylinderGeometry args={[.05,.05,2.2,12]} /><meshStandardMaterial color="#6f88a5" /></mesh>
     <CameraControls makeDefault smoothTime={.65} minDistance={5.2} maxDistance={10} maxPolarAngle={Math.PI / 2.05} />
     <Html position={[lampX, 3.32, 2.3]} center><span className="scene-tag">lamp</span></Html><Html position={[objectX, .95, .2]} center><span className="scene-tag">block</span></Html>
