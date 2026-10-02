@@ -75,8 +75,9 @@ function AnimatedPrismBounds({ box, mode, activeAxis }: { box: [number, number, 
 
 function VolumeScene({ dimensions, motion, activeAxis, mode }: { dimensions: Dimensions; motion: React.MutableRefObject<{ progress: number }>; activeAxis: Axis; mode: 'normal' | 'filling' | 'complete' }) {
   const [progress, setProgress] = useState(0)
+  const reported = useRef(0)
   const total = dimensions.length * dimensions.width * dimensions.height
-  useFrame(() => setProgress(motion.current.progress))
+  useFrame(() => { const next = motion.current.progress; if (Math.abs(next - reported.current) > .035 || (next === 0 && reported.current !== 0)) { reported.current = next; setProgress(next) } })
   const box = [dimensions.length * unit, dimensions.height * unit, dimensions.width * unit] as [number, number, number]
   const firstRow = dimensions.length
   const firstLayer = dimensions.length * dimensions.width

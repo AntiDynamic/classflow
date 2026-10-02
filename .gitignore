@@ -10,3 +10,4 @@ mobile/.expo
 
 # Local Netlify folder
 .netlify
+.vercel
