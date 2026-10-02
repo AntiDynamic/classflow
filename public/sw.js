@@ -1,4 +1,4 @@
-const CACHE = 'classflow-shell-v1'
+const CACHE = 'learnlab-kids-shell-v1'
 const APP_SHELL = ['/', '/index.html', '/manifest.webmanifest']
 
 self.addEventListener('install', (event) => {

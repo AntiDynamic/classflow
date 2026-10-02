@@ -1,8 +1,16 @@
-# ClassFlow
+# LearnLab Kids
 
-ClassFlow is an offline-first mobile prototype for one teacher managing three simultaneous learning groups in a RIVER/MGML-inspired classroom.
+LearnLab Kids is a playful, visual learning platform for children around ages 8–10. It turns maths and science ideas into small interactive playgrounds that follow a simple rhythm: **See → Play → Understand → Try**.
 
-> RIVER gives the classroom a structure for multigrade learning. ClassFlow adds an AI execution layer that helps the teacher decide where scarce attention is most useful next.
+## What is included
+
+- A responsive home page with adventure discovery and local progress
+- Maths trail: Area & Perimeter, Fractions, Shape Explorer, and Multiplication Groups
+- Science trail: Solar System, Water Cycle, States of Matter, and Light & Shadows
+- Reusable lesson shell with helper mascot, sound toggle, visual controls, and challenge cards
+- Three-question quiz after every lesson with encouraging feedback and star rewards
+- Local progress tracking via `localStorage` (no login or backend needed)
+- Keyboard-friendly controls, strong contrast, and reduced-motion support
 
 ## Run locally
 
@@ -11,34 +19,15 @@ npm install
 npm run dev
 ```
 
-Build and validate:
+## Production build
 
 ```bash
 npm run build
+npm run preview
 ```
 
-## Product boundary
+The generated `dist` folder is ready for Netlify or Vercel. Both platforms can use `npm run build` as the build command and `dist` as the publish/output directory. Since routing is client-side, configure the host to fall back to `index.html` for deep links.
 
-The teacher uses one phone. Children continue with notebooks, textbooks, reusable cards, counters, sticks, number cards, and peer practice. The phone is for brief observation updates, not continuous monitoring. The app works without a network and always allows teacher override.
+## Technologies
 
-## Demo
-
-Use the Classroom Simulator inside Live Classroom to trigger the story: Grade 2 stuck → Grade 1 finishes → Grade 3 catch-up finishes → Grade 1 checkpoint is weak. See [docs/DEMO_SCRIPT.md](docs/DEMO_SCRIPT.md).
-
-## Research and architecture
-
-- [Research notes](docs/RESEARCH.md)
-- [Architecture](docs/ARCHITECTURE.md)
-- [Demo script](docs/DEMO_SCRIPT.md)
-- [Roadmap](docs/ROADMAP.md)
-
-## GitHub
-
-Repository: https://github.com/AntiDynamic/classflow
-
-The repository is initialized with regular milestone commits and `main` tracks the GitHub remote. To contribute:
-
-```bash
-git remote add origin <your-repository-url>
-git push -u origin main
-```
+React, Vite, TypeScript, React Router, Framer Motion, Lucide icons, and modern CSS. The simulations use lightweight DOM/CSS animation so they stay usable on mobile without adding a 3D dependency where it would not improve the lesson.

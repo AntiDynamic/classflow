@@ -1,0 +1,1 @@
+export function ProgressBar({ value, label = 'Adventure progress' }: { value: number; label?: string }) { return <div className="progress-wrap"><div className="progress-label"><span>{label}</span><strong>{Math.round(value)}%</strong></div><div className="progress-track"><span style={{ width: `${Math.min(100, Math.max(0, value))}%` }} /></div></div> }

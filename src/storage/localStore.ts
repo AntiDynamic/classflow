@@ -1,6 +1,6 @@
 import type { AppState } from '../models/types'
 
-const STORAGE_KEY = 'classflow-state-v1'
+const STORAGE_KEY = 'learnlab-kids-state-v1'
 
 export function loadState(): AppState | undefined {
   try {
